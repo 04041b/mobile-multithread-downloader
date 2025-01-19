@@ -364,6 +364,11 @@
   dependencies:
     tslib "^2.8.0"
 
+"@tauri-apps/api@^2.0.0":
+  version "2.1.1"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/api/-/api-2.1.1.tgz#77d4ddb683d31072de4e6a47c8613d9db011652b"
+  integrity sha512-fzUfFFKo4lknXGJq8qrCidkUcKcH2UHhfaaCNt4GzgzGaW2iS26uFOg4tS3H4P8D6ZEeUxtiD5z0nwFF0UN30A==
+
 "@tauri-apps/cli-darwin-arm64@2.1.0":
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/@tauri-apps/cli-darwin-arm64/-/cli-darwin-arm64-2.1.0.tgz#e9b020d25bc3be1ba86a7e330c65f27c2438cb0f"
@@ -429,6 +434,13 @@
     "@tauri-apps/cli-win32-arm64-msvc" "2.1.0"
     "@tauri-apps/cli-win32-ia32-msvc" "2.1.0"
     "@tauri-apps/cli-win32-x64-msvc" "2.1.0"
+
+"@tauri-apps/plugin-opener@^2.2.2":
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/@tauri-apps/plugin-opener/-/plugin-opener-2.2.2.tgz#31f5bde7fc1ba2431c83ee1378ea34eb6fc67b20"
+  integrity sha512-E/XIHKqGV+FT8PDdkfMETmgPUxcR79Rk8USuzbadD/ZdvsKCfQR5q+6rpZC9zEnG2wzi9lVQM4D3xwrtGGIB8A==
+  dependencies:
+    "@tauri-apps/api" "^2.0.0"
 
 "@types/estree@^1.0.6":
   version "1.0.6"
