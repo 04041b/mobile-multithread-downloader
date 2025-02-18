@@ -1,23 +1,50 @@
 'use client'
 
+import { useState, useEffect } from 'react';
 import Image from "next/image";
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 
 export default function Home() {
+  const [progress, setProgress] = useState<number>(0);
+  const [downloading, setDownloading] = useState(false);
+
+  useEffect(() => {
+    const unlisten = Promise.all([
+      listen('download-progress', (event: any) => {
+        const [downloaded, total] = event.payload;
+        const percentage = Math.round((downloaded / total) * 100);
+        setProgress(percentage);
+      }),
+      listen('download-complete', () => {
+        setDownloading(false);
+        setProgress(0);
+      }),
+      listen('download-error', (event: any) => {
+        setDownloading(false);
+        setProgress(0);
+        console.error('Download failed:', event.payload);
+      })
+    ]);
+
+    return () => {
+      unlisten.then(listeners => listeners.forEach(u => u()));
+    };
+  }, []);
+
   const handleSubmit = async () => {
     const urlInput = document.querySelector('input[type="url"]') as HTMLInputElement;
     if (urlInput?.value) {
-      console.log('Submitted URL:', urlInput.value);
-      // The download will run in its own thread on the Rust side
+      setDownloading(true);
       try {
         await invoke('download_file', { 
           url: urlInput.value,
           output: 'downloaded_file.zip',
           numthreads: 4
         });
-        console.log('Download started in background');
       } catch (error) {
         console.error('Failed to start download:', error);
+        setDownloading(false);
       }
     }
   };
@@ -76,12 +103,23 @@ export default function Home() {
             placeholder="Enter URL"
             className="flex-1 px-4 py-2 rounded-md border border-black/[.08] dark:border-white/[.145] focus:outline-none focus:ring-2 focus:ring-foreground dark:bg-[#1a1a1a]"
           />
-          <button 
-            onClick={handleSubmit}
-            className="px-6 py-2 rounded-md bg-foreground text-background hover:bg-[#383838] dark:hover:bg-[#ccc] transition-colors"
-          >
-            Submit
-          </button>
+          <div className="flex flex-col sm:flex-row items-center gap-2">
+            <button 
+              onClick={handleSubmit}
+              disabled={downloading}
+              className="w-full sm:w-auto px-6 py-2 rounded-md bg-foreground text-background hover:bg-[#383838] dark:hover:bg-[#ccc] transition-colors disabled:opacity-50"
+            >
+              {downloading ? `${progress}%` : 'Submit'}
+            </button>
+            {downloading && (
+              <div className="w-full sm:w-32 h-4 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
+                <div 
+                  className="h-full bg-blue-600 transition-all duration-300"
+                  style={{ width: `${progress}%` }}
+                />
+              </div>
+            )}
+          </div>
         </div>
       </main>
       <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">

@@ -6,7 +6,7 @@ use std::io::{self, Read, Write};
 use std::sync::Arc;
 use std::thread;
 use indicatif::{ProgressBar, ProgressStyle};
-
+use tauri::{AppHandle, Emitter};
 /// Downloads a file from the given `url` to the specified `output` file using `num_threads` threads.
 /// A progress bar is displayed to show the download progress.
 ///
@@ -15,12 +15,14 @@ use indicatif::{ProgressBar, ProgressStyle};
 /// * `url` - The URL of the file to download.
 /// * `output` - The path to the output file.
 /// * `num_threads` - The number of threads to use for downloading.
+/// * `window` - The Tauri window to emit progress updates to.
 ///
 /// # Returns
 ///
 /// A `Result` which is `Ok(())` if the download succeeds or an error if something goes wrong.
-#[tauri::command]
-pub fn download_file(url: String, output: String, numthreads: usize) -> Result<(), String> {
+#[tauri::command] 
+pub fn download_file(app: AppHandle, url: String, output: String, numthreads: usize) -> Result<(), String> {
+    let app_clone = app.clone(); // Clone for the progress closure
     thread::spawn(move || {
         let result = (|| -> Result<(), Box<dyn Error + Send + Sync>> {
             let client = Client::new();
@@ -77,10 +79,17 @@ pub fn download_file(url: String, output: String, numthreads: usize) -> Result<(
             // Spawn threads to download each chunk.
             let mut handles = Vec::new();
             let url_string = url.clone();
+            let mut downloaded = Arc::new(std::sync::Mutex::new(0u64));
+            let emit_progress = Arc::new(move |n: u64| {
+                let mut downloaded = downloaded.lock().unwrap();
+                *downloaded += n;
+                let _ = app_clone.emit("download-progress", (*downloaded, total_size));
+            });
             for (start, end) in ranges {
                 let url_clone = url_string.clone();
                 let client_clone = Client::new(); // New client for each thread.
                 let pb_clone = Arc::clone(&pb);
+                let emit_progress = Arc::clone(&emit_progress);
                 let handle = thread::spawn(move || -> Result<(u64, Vec<u8>), Box<dyn Error + Send + Sync>> {
                     let max_retries = 3;
                     let mut attempt = 0;
@@ -136,7 +145,7 @@ pub fn download_file(url: String, output: String, numthreads: usize) -> Result<(
                                         break;
                                     }
                                     chunk.extend_from_slice(&buffer[..n]);
-                                    pb_clone.inc(n as u64);
+                                    let _ = emit_progress(n as u64);
                                 }
                                 return Ok((start, chunk));
                             }
@@ -168,7 +177,9 @@ pub fn download_file(url: String, output: String, numthreads: usize) -> Result<(
         })();
         
         if let Err(e) = result {
-            eprintln!("Download error: {}", e);
+            let _ = app.emit("download-error", e.to_string());
+        } else {
+            let _ = app.emit("download-complete", ());
         }
     });
     
