@@ -15,9 +15,9 @@ export default function Home() {
           output: 'downloaded_file.zip',
           numthreads: 4
         });
-        console.log('Download completed successfully');
+        console.log('Download started in background');
       } catch (error) {
-        console.error('Download failed:', error);
+        console.error('Failed to start download:', error);
       }
     }
   };
