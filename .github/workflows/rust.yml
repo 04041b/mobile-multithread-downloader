@@ -15,8 +15,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - run: cd ..
     - uses: actions/checkout@v4
+    - run: cd ..
     - name: Build
       run: cargo build --verbose
     - name: Run tests
