@@ -43,7 +43,7 @@
   "productName": "mobile-multithread-downloader",
   "mainBinaryName": "mobile-multithread-downloader",
   "version": "0.1.0",
-  "identifier": "com.tauri.dev",
+  "identifier": "dev.04041b.dev",
   "plugins": {},
   "app": {
     "windows": [
