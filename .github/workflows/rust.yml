@@ -25,6 +25,19 @@ jobs:
         cache: yarn
     - name: install node package
       run: yarn
+    - name: Install dependency on Linux
+      if: runner.os == 'Linux'
+      run: |
+        sudo apt update
+        sudo apt install libwebkit2gtk-4.1-dev \
+          build-essential \
+          curl \
+          wget \
+          file \
+          libxdo-dev \
+          libssl-dev \
+          libayatana-appindicator3-dev \
+          librsvg2-dev
     - name: Build
       run: yarn tauri build
     # - name: Run tests
