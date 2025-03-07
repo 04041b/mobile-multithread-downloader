@@ -52,7 +52,7 @@ jobs:
       run: cargo install tauri-driver --locked
 
     - name: Build
-      run: yarn tauri build --debug --no-bundle
+      run: yarn tauri build --no-bundle
 
     - name: Run tests
       if: runner.os == 'Linux'
