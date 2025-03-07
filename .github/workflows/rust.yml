@@ -20,13 +20,26 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    #set up languages & cache
     - uses: actions/setup-node@v4.2.0
       with:
         cache: yarn
+    - uses: actions/cache@v4
+      with:
+        # See here for caching with `yarn` https://github.com/actions/cache/blob/main/examples.md#node---yarn or you can leverage caching with actions/setup-node https://github.com/actions/setup-node
+        path: |
+          ~/.npm
+          ${{ github.workspace }}/.next/cache
+        # Generate a new cache whenever packages or source files change.
+        key: ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-${{ hashFiles('**/*.js', '**/*.jsx', '**/*.ts', '**/*.tsx') }}
+        # If source files changed but packages didn't, rebuild from a prior cache.
+        restore-keys: |
+          ${{ runner.os }}-nextjs-${{ hashFiles('**/package-lock.json') }}-
     - name: install rust
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src-tauri -> target'
+    #install packages
     - name: install node package
       run: yarn
     - name: Install dependency on Linux
@@ -42,6 +55,8 @@ jobs:
           libssl-dev \
           libayatana-appindicator3-dev \
           librsvg2-dev
+
+
     - name: Build
       run: yarn tauri build
     # - name: Run tests
