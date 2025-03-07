@@ -55,9 +55,15 @@ jobs:
           libssl-dev \
           libayatana-appindicator3-dev \
           librsvg2-dev
-
+          webkit2gtk-driver \
+          xvfb
 
     - name: Build
       run: yarn tauri build --debug --no-bundle
+
+    - name: Run tests
+      if: runner.os == 'Linux'
+      run: |
+        yarn test 
     # - name: Run tests
     #   run: cargo test --verbose
