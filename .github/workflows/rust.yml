@@ -39,24 +39,16 @@ jobs:
       uses: Swatinem/rust-cache@v2
       with:
         workspaces: './src-tauri -> target'
-    #install packages
+    #install packages & cache
     - name: install node package
       run: yarn
     - name: Install dependency on Linux
       if: runner.os == 'Linux'
-      run: |
-        sudo apt update
-        sudo apt install libwebkit2gtk-4.1-dev \
-          build-essential \
-          curl \
-          wget \
-          file \
-          libxdo-dev \
-          libssl-dev \
-          libayatana-appindicator3-dev \
-          librsvg2-dev
-          webkit2gtk-driver \
-          xvfb
+      uses: awalsh128/cache-apt-pkgs-action@latest
+      with:
+        packages: libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev xvfb
+        version: 1.0
+
 
     - name: Build
       run: yarn tauri build --debug --no-bundle
