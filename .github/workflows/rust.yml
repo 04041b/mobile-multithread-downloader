@@ -48,7 +48,8 @@ jobs:
       with:
         packages: libwebkit2gtk-4.1-dev build-essential curl wget file libxdo-dev libssl-dev libayatana-appindicator3-dev librsvg2-dev xvfb
         version: 1.0
-
+    - name: Install rust testing drivers
+      run: cargo install tauri-driver --locked
 
     - name: Build
       run: yarn tauri build --debug --no-bundle
