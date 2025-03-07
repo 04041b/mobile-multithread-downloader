@@ -25,6 +25,7 @@ jobs:
         cache: yarn
     - name: install rust
       uses: Swatinem/rust-cache@v2
+
     - name: install node package
       run: yarn
     - name: Install dependency on Linux
