@@ -24,7 +24,7 @@ exports.config = {
   },
 
   // ensure the rust project is built since we expect this binary to exist for the webdriver sessions
-  onPrepare: () => spawnSync('cargo', ['build', '']),
+  onPrepare: () => spawnSync('cargo', ['build', '--no-bundle']),
 
   // ensure we are running `tauri-driver` before the session starts so that we can proxy the webdriver requests
   beforeSession: () =>
