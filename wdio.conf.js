@@ -12,7 +12,7 @@ exports.config = {
     {
       maxInstances: 1,
       'tauri:options': {
-        application: '../../target/debug/mobile-multithread-downloader',
+        application: '../../target/release/mobile-multithread-downloader',
       },
     },
   ],
