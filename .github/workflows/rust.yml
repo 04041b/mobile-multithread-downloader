@@ -58,6 +58,6 @@ jobs:
 
 
     - name: Build
-      run: yarn tauri build --no-bundle
+      run: yarn tauri build --debug --no-bundle
     # - name: Run tests
     #   run: cargo test --verbose
